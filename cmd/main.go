@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/lib/pq"
 	linker "ozonTask"
 	"ozonTask/internal/preset"
 	"ozonTask/pkg/handler"

@@ -1,7 +1,7 @@
 package link
 
 type Link struct {
-	Data string
+	Data string `json:"link"`
 }
 
 type LinkStorage interface {
