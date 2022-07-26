@@ -2,6 +2,7 @@ package link
 
 import (
 	"errors"
+	"ozonTask/shorter"
 	"sync"
 )
 
@@ -14,19 +15,20 @@ func NewLinkMemory() *LinkMemory {
 	return &LinkMemory{memory: make(map[string]string)}
 }
 
-func (lm *LinkMemory) Add(original string) (string, error) {
-	var shortURL string
+func (lm *LinkMemory) Add(originalURL string) (string, error) {
+	shortURL := shorter.GetShort(originalURL)
 	lm.mx.Lock()
 	defer lm.mx.Unlock()
 	if _, ok := lm.memory[shortURL]; !ok {
-		lm.memory[shortURL] = original
+		lm.memory[shortURL] = originalURL
 	}
 	return shortURL, nil
 }
-func (lm *LinkMemory) Get(short string) (string, error) {
+func (lm *LinkMemory) Get(shortURL string) (string, error) {
 	lm.mx.RLock()
-	defer lm.mx.RUnlock()
-	if originalURL, ok := lm.memory[short]; ok {
+	originalURL, ok := lm.memory[shortURL]
+	lm.mx.RUnlock()
+	if ok {
 		return originalURL, nil
 	}
 	return "", errors.New("short link is not valid")

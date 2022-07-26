@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"net/url"
 	"ozonTask/pkg/link"
 )
 
@@ -21,9 +22,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 func (h *Handler) GetShortLink(c *gin.Context) {
 	originalLink := &link.Link{}
 	if err := c.BindJSON(originalLink); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, errors.New("invalid input"))
+		NewErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
+	if _, err := url.ParseRequestURI(originalLink.Data); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
 	shortLink, err := h.Repo.Add(originalLink.Data)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err)
@@ -38,6 +44,11 @@ func (h *Handler) GetOriginalLink(c *gin.Context) {
 		NewErrorResponse(c, http.StatusBadRequest, errors.New("invalid input"))
 		return
 	}
+	if _, err := url.ParseRequestURI(shortLink.Data); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, errors.New("invalid input"))
+		return
+	}
+
 	originalLink, err := h.Repo.Get(shortLink.Data)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err)

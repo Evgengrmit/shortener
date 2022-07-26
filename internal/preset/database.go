@@ -4,11 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 	"log"
 	"os"
 	"ozonTask/pkg/link"
 	"time"
+)
+
+const (
+	DbHost     = "db.host"
+	DbPort     = "db.port"
+	DbUser     = "db.user"
+	DbPassword = "DB_PASSWORD"
+	DbName     = "db.dbname"
+	Mode       = "db.sslmode"
 )
 
 func InitLinkMemory() link.LinkStorage {
@@ -20,18 +30,19 @@ func InitLinkSQL() link.LinkStorage {
 	if err := initConfig(); err != nil {
 		log.Fatalf("error initializating configs: %s", err.Error())
 	}
-	if err := godotenv.Load(""); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("error loading env variables: %s", err.Error())
 
 	}
 	environment := fmt.Sprintf(`host=%s port=%s user=%s
  	password=%s dbname=%s sslmode=%s`,
-		viper.GetString("db.host"),
-		viper.GetString("db.port"),
-		viper.GetString("db.user"),
-		os.Getenv("DB_PASSWORD"),
-		viper.GetString("db.dbname"),
-		viper.GetString("sslmode"))
+		viper.GetString(DbHost),
+		viper.GetString(DbPort),
+		viper.GetString(DbUser),
+		os.Getenv(DbPassword),
+		viper.GetString(DbName),
+		viper.GetString(Mode))
+	fmt.Println(environment)
 	db, err := sql.Open("postgres", environment)
 
 	if err != nil {

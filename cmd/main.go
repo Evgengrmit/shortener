@@ -10,14 +10,16 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "memory", "")
+	mode := flag.String("mode", "db", "choose mode (memory/db)")
 	var storage link.LinkStorage
 	if *mode == "memory" {
+		log.Println("used in-memory storage")
 		storage = preset.InitLinkMemory()
 	} else if *mode == "db" {
+		log.Println("used database storage")
 		storage = preset.InitLinkSQL()
 	} else {
-		log.Fatalf("frong mode error")
+		log.Fatalf("wrong mode error")
 	}
 	linkHandler := handler.Handler{
 		Repo: storage,

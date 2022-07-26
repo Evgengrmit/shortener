@@ -5,6 +5,6 @@ type Link struct {
 }
 
 type LinkStorage interface {
-	Add(original string) (string, error)
-	Get(short string) (string, error)
+	Add(originalURL string) (string, error)
+	Get(shortURL string) (string, error)
 }

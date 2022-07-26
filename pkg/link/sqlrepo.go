@@ -1,6 +1,9 @@
 package link
 
-import "database/sql"
+import (
+	"database/sql"
+	"ozonTask/shorter"
+)
 
 type LinkSQL struct {
 	DB *sql.DB
@@ -12,21 +15,25 @@ func NewLinkSQL(db *sql.DB) *LinkSQL {
 	}
 }
 
-func (ls *LinkSQL) Add(original string) (string, error) {
-	var short string
-	_, err := ls.DB.Exec("INSERT INTO links (`shortURL`, `longURL`) VALUES (&1, $2)", short, original)
+func (ls *LinkSQL) Add(originalURL string) (string, error) {
+	shortURL := shorter.GetShort(originalURL)
+	_, err := ls.Get(shortURL)
 	if err != nil {
-		return "", err
+		_, err := ls.DB.Exec("INSERT INTO links (short, original) VALUES ($1, $2)", shortURL, originalURL)
+		if err != nil {
+			return "", err
+		}
 	}
-	return short, nil
+
+	return shortURL, nil
 }
 
-func (ls *LinkSQL) Get(short string) (string, error) {
-	row := ls.DB.QueryRow("SELECT longURL FROM links WHERE shortURL=$sl", short)
-	var original string
-	err := row.Scan(&original)
+func (ls *LinkSQL) Get(shortURL string) (string, error) {
+	row := ls.DB.QueryRow("SELECT original FROM links WHERE short=$1", shortURL)
+	var originalURL string
+	err := row.Scan(&originalURL)
 	if err != nil {
 		return "", err
 	}
-	return original, nil
+	return originalURL, nil
 }
