@@ -2,6 +2,7 @@ package preset
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -21,6 +22,21 @@ const (
 	Mode       = "db.sslmode"
 )
 
+func GetStorage() link.LinkStorage {
+	var storage link.LinkStorage
+	mode := flag.String("mode", "", "choose mode (memory/db)")
+
+	if *mode == "memory" {
+		log.Println("used in-memory storage")
+		storage = InitLinkMemory()
+	} else if *mode == "db" {
+		log.Println("used database storage")
+		storage = InitLinkSQL()
+	} else {
+		log.Fatalf("wrong mode error")
+	}
+	return storage
+}
 func InitLinkMemory() link.LinkStorage {
 	return link.NewLinkMemory()
 
