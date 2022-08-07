@@ -16,10 +16,7 @@ func NewLinkMemory() *LinkMemory {
 }
 
 func (lm *LinkMemory) Add(originalURL string) (string, error) {
-	shortURL, err := shorter.GetShort(originalURL)
-	if err != nil {
-		return "", err
-	}
+	shortURL := shorter.GetShort(originalURL)
 	lm.mx.Lock()
 	_, ok := lm.memory[shortURL]
 	lm.mx.Unlock()

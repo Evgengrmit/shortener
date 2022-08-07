@@ -16,11 +16,9 @@ func NewLinkSQL(db *sql.DB) *LinkSQL {
 }
 
 func (ls *LinkSQL) Add(originalURL string) (string, error) {
-	shortURL, err := shorter.GetShort(originalURL)
-	if err != nil {
-		return "", err
-	}
-	_, err = ls.Get(shortURL)
+	shortURL := shorter.GetShort(originalURL)
+
+	_, err := ls.Get(shortURL)
 	if err != nil {
 		_, err := ls.DB.Exec("INSERT INTO links (short, original) VALUES ($1, $2)", shortURL, originalURL)
 		if err != nil {

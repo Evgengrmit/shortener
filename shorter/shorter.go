@@ -8,14 +8,11 @@ import (
 
 const base63 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
 
-func getHash(original string) (int64, error) {
+func getHash(original string) int64 {
 	shaHash := sha256.Sum256([]byte(original))
 	fnvHash := fnv.New64a()
-	_, err := fnvHash.Write(shaHash[:])
-	if err != nil {
-		return 0, err
-	}
-	return int64(fnvHash.Sum64()), nil
+	fnvHash.Write(shaHash[:])
+	return int64(fnvHash.Sum64())
 }
 func RandString() string {
 	b := make([]byte, 10)
@@ -25,13 +22,11 @@ func RandString() string {
 	return string(b)
 }
 
-// GetShort - пока заглушка
-func GetShort(original string) (string, error) {
-	hash, err := getHash(original)
-	if err != nil {
-		return "", err
-	}
+// GetShort
+func GetShort(original string) string {
+	hash := getHash(original)
+
 	rand.Seed(hash)
 
-	return RandString(), nil
+	return RandString()
 }
