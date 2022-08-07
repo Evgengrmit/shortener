@@ -27,8 +27,8 @@ const DbPassword = "DB_PASSWORD"
 
 func GetStorage() link.LinkStorage {
 	var storage link.LinkStorage
-	mode := flag.String("mode", "memory", "choose mode (memory/db)")
-
+	mode := flag.String("m", "memory", "choose mode (memory/db)")
+	flag.Parse()
 	if *mode == "memory" {
 		log.Println("used in-memory storage")
 		storage = link.NewLinkMemory()
