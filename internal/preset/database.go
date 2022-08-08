@@ -2,7 +2,6 @@ package preset
 
 import (
 	"database/sql"
-	"flag"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
@@ -27,12 +26,12 @@ const DbPassword = "DB_PASSWORD"
 
 func GetStorage() link.LinkStorage {
 	var storage link.LinkStorage
-	mode := flag.String("m", "memory", "choose mode (memory/db)")
-	flag.Parse()
-	if *mode == "memory" {
+	mode := os.Getenv("WORKMODE")
+	mode = "db"
+	if mode == "memory" {
 		log.Println("used in-memory storage")
 		storage = link.NewLinkMemory()
-	} else if *mode == "db" {
+	} else if mode == "db" {
 		log.Println("used database storage")
 		storage = InitLinkSQL()
 	} else {
@@ -72,7 +71,7 @@ func InitLinkSQL() link.LinkStorage {
 		log.Fatalf("error opening db: %s", err.Error())
 	}
 
-	db.SetMaxOpenConns(100)
+	db.SetMaxOpenConns(1000)
 	db.SetConnMaxLifetime(10 * time.Minute)
 
 	err = db.Ping()
